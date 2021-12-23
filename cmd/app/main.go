@@ -2,25 +2,18 @@ package main
 
 import (
 	"fmt"
-	"net/http"
-	"os"
-	"time"
 
 	"github.com/petermnhull/go-music-app/internal"
+	"github.com/petermnhull/go-music-app/internal/config"
 	"github.com/rs/zerolog/log"
 )
 
 func main() {
-	port := os.Getenv("APP_PORT")
-
-	log.Info().Msg(fmt.Sprintf("Starting server on port %s", port))
-
-	server := &http.Server{
-		Handler:      internal.NewRouter(),
-		Addr:         fmt.Sprintf("127.0.0.1:%s", port),
-		WriteTimeout: 15 * time.Second,
-		ReadTimeout:  15 * time.Second,
+	ctx, err := config.NewContext()
+	if err != nil {
+		log.Fatal().Msg("failed to load config: " + err.Error())
 	}
-
+	server := internal.NewServer(ctx)
+	log.Info().Msg(fmt.Sprintf("Starting server on port %v", ctx.AppConfig.Port))
 	log.Fatal().Err(server.ListenAndServe())
 }
