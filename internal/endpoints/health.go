@@ -13,6 +13,6 @@ func HealthCheckHandler(ctx *config.AppContext, r *http.Request) *APIResponse {
 	data := map[string]string{
 		"user_agent": r.Header.Get("User-Agent"),
 	}
-	response := APIResponse{200, "success", data}
-	return &response
+	response := NewAPIResponseSuccess(http.StatusOK, data)
+	return response
 }

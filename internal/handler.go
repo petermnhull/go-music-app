@@ -1,7 +1,6 @@
 package internal
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 
@@ -19,6 +18,5 @@ type AppHandler struct {
 func (ah AppHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	response := ah.Handler(ah.AppContext, r)
 	w.WriteHeader(int(response.Code))
-	responseBytes, _ := json.Marshal(response)
-	fmt.Fprint(w, string(responseBytes))
+	fmt.Fprint(w, response.ToOutput())
 }
