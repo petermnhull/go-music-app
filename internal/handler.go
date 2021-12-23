@@ -1,22 +1,24 @@
 package internal
 
 import (
+	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/petermnhull/go-music-app/internal/config"
+	"github.com/petermnhull/go-music-app/internal/endpoints"
 )
 
 // AppHandler wraps endpoint handlers with context
 type AppHandler struct {
 	AppContext *config.AppContext
-	Handler    func(ctx *config.AppContext, w http.ResponseWriter, r *http.Request)
-}
-
-func newHandler(ctx *config.AppContext, endpointHandler func(ctx *config.AppContext, w http.ResponseWriter, r *http.Request)) AppHandler {
-	return AppHandler{ctx, endpointHandler}
+	Handler    func(ctx *config.AppContext, r *http.Request) *endpoints.APIResponse
 }
 
 // ServeHTTP to satisfy the http.Handler interface
 func (ah AppHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	ah.Handler(ah.AppContext, w, r)
+	response := ah.Handler(ah.AppContext, r)
+	w.WriteHeader(int(response.Code))
+	responseBytes, _ := json.Marshal(response)
+	fmt.Fprint(w, string(responseBytes))
 }

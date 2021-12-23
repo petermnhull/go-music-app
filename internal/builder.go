@@ -11,7 +11,7 @@ import (
 
 func newRouter(ctx *config.AppContext) *mux.Router {
 	r := mux.NewRouter()
-	r.Handle("/health", newHandler(ctx, endpoints.HealthCheckHandler))
+	r.Handle("/health", AppHandler{ctx, endpoints.HealthCheckHandler})
 	return r
 }
 
