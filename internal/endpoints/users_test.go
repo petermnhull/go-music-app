@@ -1,12 +1,15 @@
 package endpoints_test
 
 import (
+	"bytes"
 	"context"
+	"errors"
 	"net/http"
 	"testing"
 	"time"
 
 	"github.com/gorilla/mux"
+	"github.com/jackc/pgconn"
 	"github.com/jackc/pgx/v4"
 	"github.com/pashagolub/pgxmock"
 	"github.com/petermnhull/go-music-app/internal/config"
@@ -243,6 +246,114 @@ func TestGetUserByIDHandler(t *testing.T) {
 			UpdatedAt:       time,
 		}
 		expected := endpoints.APIResponse{200, "success", map[string]models.User{"user": expectedUser}}
+		assert.Equal(t, &expected, actual)
+	})
+}
+
+func TestUpsertUserHandler(t *testing.T) {
+	t.Run("upsert user ok", func(t *testing.T) {
+		mockDB, err := pgxmock.NewConn(
+			pgxmock.QueryMatcherOption(pgxmock.QueryMatcherEqual),
+		)
+		assert.NoError(t, err)
+		defer mockDB.Close(context.Background())
+
+		query := `insert into users (spotify_username, lastfm_username) values ('123abc', '789xyz')
+		on conflict (spotify_username) do update set lastfm_username = EXCLUDED.lastfm_username`
+		mockDB.ExpectExec(query).WillReturnResult(pgconn.CommandTag{})
+
+		ctx := config.AppContext{
+			AppConfig:    &config.AppConfig{},
+			Context:      context.Background(),
+			DBConnection: mockDB,
+		}
+
+		body := bytes.NewReader([]byte(`{"spotify_username": "123abc", "lastfm_username": "789xyz"}`))
+		r, _ := http.NewRequest(http.MethodPost, "/users", body)
+
+		actual := endpoints.UserUpsertHandler(&ctx, r)
+		expectedBody := map[string]interface{}{
+			"message":          "user upserted",
+			"spotify_username": "123abc",
+			"lastfm_username":  "789xyz",
+		}
+		expected := endpoints.APIResponse{201, "success", expectedBody}
+		assert.Equal(t, &expected, actual)
+	})
+
+	t.Run("upsert user 500", func(t *testing.T) {
+		mockDB, err := pgxmock.NewConn(
+			pgxmock.QueryMatcherOption(pgxmock.QueryMatcherEqual),
+		)
+		assert.NoError(t, err)
+		defer mockDB.Close(context.Background())
+
+		query := `insert into users (spotify_username, lastfm_username) values ('123abc', '789xyz')
+		on conflict (spotify_username) do update set lastfm_username = EXCLUDED.lastfm_username`
+		mockDB.ExpectExec(query).WillReturnError(errors.New("database failure"))
+
+		ctx := config.AppContext{
+			AppConfig:    &config.AppConfig{},
+			Context:      context.Background(),
+			DBConnection: mockDB,
+		}
+
+		body := bytes.NewReader([]byte(`{"spotify_username": "123abc", "lastfm_username": "789xyz"}`))
+		r, _ := http.NewRequest(http.MethodPost, "/users", body)
+
+		actual := endpoints.UserUpsertHandler(&ctx, r)
+		expectedBody := map[string]string{
+			"error": "failed to upsert user: database failure",
+		}
+		expected := endpoints.APIResponse{500, "failed", expectedBody}
+		assert.Equal(t, &expected, actual)
+	})
+
+	t.Run("upsert user 400 invalid parameters", func(t *testing.T) {
+		mockDB, err := pgxmock.NewConn(
+			pgxmock.QueryMatcherOption(pgxmock.QueryMatcherEqual),
+		)
+		assert.NoError(t, err)
+		defer mockDB.Close(context.Background())
+
+		ctx := config.AppContext{
+			AppConfig:    &config.AppConfig{},
+			Context:      context.Background(),
+			DBConnection: mockDB,
+		}
+
+		body := bytes.NewReader([]byte(`{"spotify_username": "", "lastfm_username": "789xyz"}`))
+		r, _ := http.NewRequest(http.MethodPost, "/users", body)
+
+		actual := endpoints.UserUpsertHandler(&ctx, r)
+		expectedBody := map[string]string{
+			"error": "invalid parameters in request body",
+		}
+		expected := endpoints.APIResponse{400, "failed", expectedBody}
+		assert.Equal(t, &expected, actual)
+	})
+
+	t.Run("upsert user 400 invalid json", func(t *testing.T) {
+		mockDB, err := pgxmock.NewConn(
+			pgxmock.QueryMatcherOption(pgxmock.QueryMatcherEqual),
+		)
+		assert.NoError(t, err)
+		defer mockDB.Close(context.Background())
+
+		ctx := config.AppContext{
+			AppConfig:    &config.AppConfig{},
+			Context:      context.Background(),
+			DBConnection: mockDB,
+		}
+
+		body := bytes.NewReader([]byte(`{"spotify_username": "123abc"`))
+		r, _ := http.NewRequest(http.MethodPost, "/users", body)
+
+		actual := endpoints.UserUpsertHandler(&ctx, r)
+		expectedBody := map[string]string{
+			"error": "invalid json request body",
+		}
+		expected := endpoints.APIResponse{400, "failed", expectedBody}
 		assert.Equal(t, &expected, actual)
 	})
 }
