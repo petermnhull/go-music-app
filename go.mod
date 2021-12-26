@@ -4,17 +4,18 @@ go 1.17
 
 require (
 	github.com/gorilla/mux v1.8.0
+	github.com/jackc/pgconn v1.10.1
 	github.com/jackc/pgx/v4 v4.14.1
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/pashagolub/pgxmock v1.4.3
 	github.com/rs/zerolog v1.26.1
 	github.com/stretchr/testify v1.7.0
+	gopkg.in/validator.v2 v2.0.0-20210331031555-b37d688a7fb0
 )
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/jackc/chunkreader/v2 v2.0.1 // indirect
-	github.com/jackc/pgconn v1.10.1 // indirect
 	github.com/jackc/pgio v1.0.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgproto3/v2 v2.2.0 // indirect
