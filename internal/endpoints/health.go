@@ -10,9 +10,12 @@ import (
 // HealthCheckHandler exposes health check endpoint
 func HealthCheckHandler(ctx *config.AppContext, r *http.Request) *APIResponse {
 	log.Info().Msg("Health check endpoint hit!")
+	err := ctx.DBConnection.Ping(ctx.Context)
+	if err != nil {
+		return NewAPIResponseFailed(http.StatusInternalServerError, "failed to connect to database")
+	}
 	data := map[string]string{
 		"user_agent": r.Header.Get("User-Agent"),
 	}
-	response := NewAPIResponseSuccess(http.StatusOK, data)
-	return response
+	return NewAPIResponseSuccess(http.StatusOK, data)
 }

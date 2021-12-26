@@ -18,5 +18,6 @@ type AppHandler struct {
 func (ah AppHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	response := ah.Handler(ah.AppContext, r)
 	w.WriteHeader(int(response.Code))
-	fmt.Fprint(w, response.ToOutput())
+	output := response.ToOutput()
+	fmt.Fprint(w, output)
 }

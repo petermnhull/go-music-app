@@ -12,6 +12,9 @@ import (
 func newRouter(ctx *config.AppContext) *mux.Router {
 	r := mux.NewRouter()
 	r.Handle("/health", AppHandler{ctx, endpoints.HealthCheckHandler}).Methods(http.MethodGet)
+	r.Handle("/users", AppHandler{ctx, endpoints.UsersGetHandler}).Methods(http.MethodGet)
+	r.Handle("/users/{id:[0-9+]}", AppHandler{ctx, endpoints.UsersGetByIDHandler}).Methods(http.MethodGet)
+	r.Handle("/users/count", AppHandler{ctx, endpoints.UsersCountHandler}).Methods(http.MethodGet)
 	return r
 }
 

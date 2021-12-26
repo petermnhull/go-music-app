@@ -11,6 +11,7 @@ type AppConfig struct {
 	Port         int           `envconfig:"APP_PORT" default:"8080"`
 	ReadTimeout  time.Duration `envconfig:"APP_READ_TIMEOUT" default:"5s"`
 	WriteTimeout time.Duration `envconfig:"APP_WRITE_TIMEOUT" default:"5s"`
+	DatabaseURL  string        `envconfig:"DATABASE_URL"`
 }
 
 // newAppConfig reads configuration from environment variables

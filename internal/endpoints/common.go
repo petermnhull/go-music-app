@@ -2,6 +2,11 @@ package endpoints
 
 import "encoding/json"
 
+const (
+	statusSuccess = "success"
+	statusFailed  = "failed"
+)
+
 // APIResponseData holds generic data for API response
 type APIResponseData interface{}
 
@@ -21,13 +26,13 @@ func (r *APIResponse) ToOutput() string {
 
 // NewAPIResponseSuccess creates a new APIResponse for a successful request
 func NewAPIResponseSuccess(code int64, data interface{}) *APIResponse {
-	response := APIResponse{code, "success", data}
+	response := APIResponse{code, statusSuccess, data}
 	return &response
 }
 
 // NewAPIResponseFailed creates a new APIResponse for a failed request
 func NewAPIResponseFailed(code int64, message string) *APIResponse {
 	data := map[string]string{"error": message}
-	response := APIResponse{code, "failed", data}
+	response := APIResponse{code, statusFailed, data}
 	return &response
 }
