@@ -13,6 +13,7 @@ func main() {
 	if err != nil {
 		log.Fatal().Msg("failed to load config: " + err.Error())
 	}
+	defer ctx.Close()
 	server := internal.NewServer(ctx)
 	log.Info().Msg(fmt.Sprintf("Starting server on port %v", ctx.AppConfig.Port))
 	log.Fatal().Err(server.ListenAndServe())
