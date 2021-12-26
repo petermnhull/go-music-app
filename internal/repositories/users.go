@@ -79,3 +79,17 @@ func GetUserByID(ctx context.Context, DB config.DBConnectionInterface, userID in
 	}
 	return &user, nil
 }
+
+// UpsertUser inserts a user, updating LastFM username if necessary
+func UpsertUser(ctx context.Context, DB config.DBConnectionInterface, user *models.User) error {
+	query := fmt.Sprintf(
+		`
+		insert into users (spotify_username, lastfm_username) values ('%s', '%s')
+		on conflict (spotify_username) do update set lastfm_username = EXCLUDED.lastfm_username
+		`,
+		user.SpotifyUsername,
+		user.LastfmUsername,
+	)
+	_, err := DB.Exec(ctx, query)
+	return err
+}

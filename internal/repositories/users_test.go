@@ -5,6 +5,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/jackc/pgconn"
 	"github.com/jackc/pgx/v4"
 	"github.com/pashagolub/pgxmock"
 	"github.com/petermnhull/go-music-app/internal/models"
@@ -102,5 +103,22 @@ func TestGetUserByID(t *testing.T) {
 		_, err = repositories.GetUserByID(context.Background(), mockDB, 1)
 		assert.Error(t, err)
 		assert.EqualError(t, err, "no matching user in database")
+	})
+}
+
+func TestUpsertUser(t *testing.T) {
+	t.Run("upsert user ok", func(t *testing.T) {
+		mockDB, err := pgxmock.NewConn(
+			pgxmock.QueryMatcherOption(pgxmock.QueryMatcherEqual),
+		)
+		assert.NoError(t, err)
+		defer mockDB.Close(context.Background())
+
+		query := `insert into users (spotify_username, lastfm_username) values ('123abc', '789xyz')
+		on conflict (spotify_username) do update set lastfm_username = EXCLUDED.lastfm_username`
+		mockDB.ExpectExec(query).WillReturnResult(pgconn.CommandTag{})
+		user := models.User{SpotifyUsername: "123abc", LastfmUsername: "789xyz"}
+		err = repositories.UpsertUser(context.Background(), mockDB, &user)
+		assert.NoError(t, err)
 	})
 }
