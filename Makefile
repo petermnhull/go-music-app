@@ -16,3 +16,6 @@ lint:
 
 test:
 	go test ./... -cover
+
+login-db:
+	psql ${DATABASE_URL}
