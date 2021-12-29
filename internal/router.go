@@ -9,6 +9,7 @@ import (
 	"github.com/petermnhull/go-music-app/internal/endpoints"
 )
 
+// appHandler for wrapping API requests with common responses
 type appHandler struct {
 	AppContext *config.AppContext
 	Handler    func(ctx *config.AppContext, r *http.Request) *endpoints.APIResponse
@@ -16,7 +17,10 @@ type appHandler struct {
 
 // ServeHTTP to satisfy the http.Handler interface
 func (ah appHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	response := ah.Handler(ah.AppContext, r)
+	ctx := ah.AppContext
+	response := ah.Handler(ctx, r)
+	w.Header().Add("Access-Control-Allow-Origin", ctx.AppConfig.AllowOriginURI)
+	w.Header().Add("Served-By", ctx.AppConfig.Name)
 	w.WriteHeader(int(response.Code))
 	output := response.ToOutput()
 	fmt.Fprint(w, output)
@@ -25,6 +29,8 @@ func (ah appHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 // NewRouter provides handler for all endpoints
 func NewRouter(ctx *config.AppContext) *mux.Router {
 	r := mux.NewRouter()
+
+	r.Handle("/auth", appHandler{ctx, endpoints.AuthHandler}).Methods(http.MethodGet)
 	r.Handle("/health", appHandler{ctx, endpoints.HealthCheckHandler}).Methods(http.MethodGet)
 	r.Handle("/users", appHandler{ctx, endpoints.UsersGetHandler}).Methods(http.MethodGet)
 	r.Handle("/users", appHandler{ctx, endpoints.UserUpsertHandler}).Methods(http.MethodPost)
