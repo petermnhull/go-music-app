@@ -14,7 +14,13 @@ func TestGetAccess(t *testing.T) {
 		httpclient.AddMockResponse(
 			"https://accounts.spotify.com/api/token",
 			200,
-			`{"access_token": "123abc", "refresh_token": "789xyz", "scope": "read-private", "token_type": "token"}`,
+			`{
+				"access_token": "123abc",
+				"refresh_token": "789xyz",
+				"scope": "read-private",
+				"token_type": "token",
+				"expires_in": 3600
+			}`,
 		)
 		actual, err := spotify.GetAccess(httpclient, "code", "redirect", "clientID", "clientSecret")
 		expected := spotify.SpotifyAccess{
@@ -22,6 +28,7 @@ func TestGetAccess(t *testing.T) {
 			RefreshToken: "789xyz",
 			Scope:        "read-private",
 			TokenType:    "token",
+			ExpiresIn:    3600,
 		}
 		assert.NoError(t, err)
 		assert.Equal(t, &expected, actual)

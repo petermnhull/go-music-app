@@ -14,10 +14,25 @@ func TestGetMe(t *testing.T) {
 		httpclient.AddMockResponse(
 			"https://api.spotify.com/v1/me",
 			200,
-			`{"display_name": "Firstname Lastname"}`,
+			`{
+				"id": "123abc",
+				"email": "email@email.com",
+				"uri": "123abcxyz",
+				"country": "GB",
+				"product": "premium",
+				"display_name": "Firstname Lastname",
+				"product": "premium"		
+			}`,
 		)
 		actual, err := spotify.GetMe(httpclient, "access-token")
-		expected := spotify.SpotifyMe{DisplayName: "Firstname Lastname"}
+		expected := spotify.SpotifyMe{
+			ID:          "123abc",
+			Email:       "email@email.com",
+			URI:         "123abcxyz",
+			Country:     "GB",
+			Product:     "premium",
+			DisplayName: "Firstname Lastname",
+		}
 		assert.NoError(t, err)
 		assert.Equal(t, &expected, actual)
 	})

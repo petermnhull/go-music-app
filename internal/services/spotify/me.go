@@ -10,11 +10,20 @@ import (
 	"gopkg.in/validator.v2"
 )
 
+// SpotifyMeImages suboutput for images
+type SpotifyMeImages struct {
+	URL string `json:"url"`
+}
+
 // SpotifyMe holds output from getting user associated with access token
 type SpotifyMe struct {
-	DisplayName string `json:"display_name" validate:"nonzero"`
-	Country     string `json:"country"`
-	Product     string `json:"product"`
+	ID          string            `json:"id" validate:"nonzero"`
+	DisplayName string            `json:"display_name" validate:"nonzero"`
+	Email       string            `json:"email" validate:"nonzero"`
+	URI         string            `json:"uri" validate:"nonzero"`
+	Country     string            `json:"country"`
+	Product     string            `json:"product"`
+	Images      []SpotifyMeImages `json:"images"`
 }
 
 func createMeRequest(accessToken string) (*http.Request, error) {

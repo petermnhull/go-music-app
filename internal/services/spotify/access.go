@@ -19,6 +19,7 @@ type SpotifyAccess struct {
 	RefreshToken string `json:"refresh_token" validate:"nonzero"`
 	Scope        string `json:"scope" validate:"nonzero"`
 	TokenType    string `json:"token_type" validate:"nonzero"`
+	ExpiresIn    int64  `json:"expires_in" validate:"nonzero"`
 }
 
 func createAccessRequest(code string, redirectURI string, clientID string, clientSecret string) (*http.Request, error) {
