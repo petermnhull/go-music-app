@@ -13,56 +13,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestCountUsers(t *testing.T) {
-	t.Run("count users ok", func(t *testing.T) {
-		mockDB, err := pgxmock.NewConn(
-			pgxmock.QueryMatcherOption(pgxmock.QueryMatcherEqual),
-		)
-		assert.NoError(t, err)
-		defer mockDB.Close(context.Background())
-
-		columns := []string{"count"}
-		mockDB.ExpectQuery(
-			"select count(*) from users",
-		).WillReturnRows(
-			mockDB.NewRows(columns).AddRow(int64(1)),
-		)
-		result, err := repositories.CountUsers(context.Background(), mockDB)
-		assert.NoError(t, err)
-		assert.Equal(t, int64(1), result)
-	})
-}
-
-func TestGetAllUsers(t *testing.T) {
-	t.Run("get all users ok", func(t *testing.T) {
-		mockDB, err := pgxmock.NewConn(
-			pgxmock.QueryMatcherOption(pgxmock.QueryMatcherEqual),
-		)
-		assert.NoError(t, err)
-		defer mockDB.Close(context.Background())
-
-		columns := []string{"id", "spotify_username", "lastfm_username", "created_at", "updated_at"}
-		time := time.Now().UTC()
-		mockDB.ExpectQuery(
-			"select * from users",
-		).WillReturnRows(
-			mockDB.NewRows(columns).AddRow(int64(1), "username1", "username2", time, time),
-		)
-
-		result, err := repositories.GetAllUsers(context.Background(), mockDB)
-		assert.NoError(t, err)
-		user := models.User{
-			ID:              1,
-			SpotifyUsername: "username1",
-			LastfmUsername:  "username2",
-			CreatedAt:       time,
-			UpdatedAt:       time,
-		}
-		expected := []models.User{user}
-		assert.Equal(t, expected, result)
-	})
-}
-
 func TestGetUserByID(t *testing.T) {
 	t.Run("get user ok", func(t *testing.T) {
 		mockDB, err := pgxmock.NewConn(
@@ -71,22 +21,40 @@ func TestGetUserByID(t *testing.T) {
 		assert.NoError(t, err)
 		defer mockDB.Close(context.Background())
 
-		columns := []string{"id", "spotify_username", "lastfm_username", "created_at", "updated_at"}
+		columns := []string{
+			"id",
+			"access_token",
+			"refresh_token",
+			"scope",
+			"expires_at",
+			"created_at",
+			"updated_at",
+		}
 		time := time.Now().UTC()
 		mockDB.ExpectQuery(
-			"select * from users where id=1",
+			"select * from users where id='123abc'",
 		).WillReturnRows(
-			mockDB.NewRows(columns).AddRow(int64(1), "username1", "username2", time, time),
+			mockDB.NewRows(columns).AddRow(
+				"123abc",
+				"access-token",
+				"refresh-token",
+				"read-private",
+				time,
+				time,
+				time,
+			),
 		)
 
-		result, err := repositories.GetUserByID(context.Background(), mockDB, 1)
+		result, err := repositories.GetUserByID(context.Background(), mockDB, "123abc")
 		assert.NoError(t, err)
 		expected := models.User{
-			ID:              1,
-			SpotifyUsername: "username1",
-			LastfmUsername:  "username2",
-			CreatedAt:       time,
-			UpdatedAt:       time,
+			ID:           "123abc",
+			AccessToken:  "access-token",
+			RefreshToken: "refresh-token",
+			Scope:        "read-private",
+			ExpiresAt:    time,
+			CreatedAt:    time,
+			UpdatedAt:    time,
 		}
 		assert.Equal(t, &expected, result)
 	})
@@ -98,9 +66,9 @@ func TestGetUserByID(t *testing.T) {
 		assert.NoError(t, err)
 		defer mockDB.Close(context.Background())
 
-		mockDB.ExpectQuery("select * from users where id=1").WillReturnError(pgx.ErrNoRows)
+		mockDB.ExpectQuery("select * from users where id='123abc'").WillReturnError(pgx.ErrNoRows)
 
-		_, err = repositories.GetUserByID(context.Background(), mockDB, 1)
+		_, err = repositories.GetUserByID(context.Background(), mockDB, "123abc")
 		assert.Error(t, err)
 		assert.EqualError(t, err, "no matching user in database")
 	})
@@ -114,10 +82,28 @@ func TestUpsertUser(t *testing.T) {
 		assert.NoError(t, err)
 		defer mockDB.Close(context.Background())
 
-		query := `insert into users (spotify_username, lastfm_username) values ('123abc', '789xyz')
-		on conflict (spotify_username) do update set lastfm_username = EXCLUDED.lastfm_username`
+		query := `insert into users (
+			"id",
+			"access_token",
+			"refresh_token",
+			"scope",
+			"expires_at"
+		) values
+		('123abc', 'access-token', 'refresh-token', 'read-private', '2020-01-01T00:00:00Z')
+		on conflict (id) do update set
+		access_token = EXCLUDED.access_token,
+		refresh_token = EXCLUDED.refresh_token,
+		scope = EXCLUDED.scope,
+		expires_at = EXCLUDED.expires_at;
+		`
 		mockDB.ExpectExec(query).WillReturnResult(pgconn.CommandTag{})
-		user := models.User{SpotifyUsername: "123abc", LastfmUsername: "789xyz"}
+		user := models.User{
+			ID:           "123abc",
+			AccessToken:  "access-token",
+			RefreshToken: "refresh-token",
+			Scope:        "read-private",
+			ExpiresAt:    time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
+		}
 		err = repositories.UpsertUser(context.Background(), mockDB, &user)
 		assert.NoError(t, err)
 	})

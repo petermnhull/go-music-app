@@ -4,9 +4,11 @@ import "time"
 
 // User holds information for music listener
 type User struct {
-	ID              int64     `json:"id"`
-	SpotifyUsername string    `json:"spotify_username"`
-	LastfmUsername  string    `json:"lastfm_username"`
-	CreatedAt       time.Time `json:"created_at"`
-	UpdatedAt       time.Time `json:"updated_at"`
+	ID           string    `json:"id"`
+	AccessToken  string    `json:"access_token"`
+	RefreshToken string    `json:"refresh_token"`
+	Scope        string    `json:"scope"`
+	ExpiresAt    time.Time `json:"expires_at"`
+	CreatedAt    time.Time `json:"created_at"`
+	UpdatedAt    time.Time `json:"updated_at"`
 }

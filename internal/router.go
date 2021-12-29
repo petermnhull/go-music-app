@@ -32,9 +32,6 @@ func NewRouter(ctx *config.AppContext) *mux.Router {
 
 	r.Handle("/auth", appHandler{ctx, endpoints.AuthHandler}).Methods(http.MethodGet)
 	r.Handle("/health", appHandler{ctx, endpoints.HealthCheckHandler}).Methods(http.MethodGet)
-	r.Handle("/users", appHandler{ctx, endpoints.UsersGetHandler}).Methods(http.MethodGet)
-	r.Handle("/users", appHandler{ctx, endpoints.UserUpsertHandler}).Methods(http.MethodPost)
-	r.Handle("/users/{id:[0-9+]}", appHandler{ctx, endpoints.UsersGetByIDHandler}).Methods(http.MethodGet)
-	r.Handle("/users/count", appHandler{ctx, endpoints.UsersCountHandler}).Methods(http.MethodGet)
+	r.Handle("/users/{id}", appHandler{ctx, endpoints.UsersGetByIDHandler}).Methods(http.MethodGet)
 	return r
 }

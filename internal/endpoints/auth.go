@@ -2,8 +2,11 @@ package endpoints
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/petermnhull/go-music-app/internal/config"
+	"github.com/petermnhull/go-music-app/internal/models"
+	"github.com/petermnhull/go-music-app/internal/repositories"
 	"github.com/petermnhull/go-music-app/internal/services/spotify"
 )
 
@@ -30,12 +33,24 @@ func AuthHandler(ctx *config.AppContext, r *http.Request) *APIResponse {
 	}
 
 	// Find out who it is
-	user, err := spotify.GetMe(ctx.HTTPClient, access.AccessToken)
+	profile, err := spotify.GetMe(ctx.HTTPClient, access.AccessToken)
 	if err != nil {
 		return NewAPIResponseFailed(http.StatusInternalServerError, err.Error())
 	}
 
-	// TODO: Store data in DB
+	// Upsert latest tokens into database
+	expiresAt := time.Now().Add(time.Second * time.Duration(access.ExpiresIn)).UTC()
+	user := &models.User{
+		ID:           profile.ID,
+		AccessToken:  access.AccessToken,
+		RefreshToken: access.RefreshToken,
+		Scope:        access.Scope,
+		ExpiresAt:    expiresAt,
+	}
+	err = repositories.UpsertUser(ctx.Context, ctx.DBConnection, user)
+	if err != nil {
+		return NewAPIResponseFailed(http.StatusInternalServerError, err.Error())
+	}
 
 	return NewAPIResponseSuccess(http.StatusOK, user)
 }
