@@ -41,39 +41,14 @@ CREATE TABLE public.schema_migrations (
 --
 
 CREATE TABLE public.users (
-    id integer NOT NULL,
-    spotify_username character varying(255),
-    lastfm_username character varying(255),
+    id character varying(255) NOT NULL,
+    access_token character varying(255) NOT NULL,
+    refresh_token character varying(255) NOT NULL,
+    scope character varying(255) NOT NULL,
+    expires_at timestamp without time zone NOT NULL,
     created_at timestamp without time zone DEFAULT (now() AT TIME ZONE 'utc'::text),
     updated_at timestamp without time zone DEFAULT (now() AT TIME ZONE 'utc'::text)
 );
-
-
---
--- Name: users_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.users_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: users_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.users_id_seq OWNED BY public.users.id;
-
-
---
--- Name: users id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_id_seq'::regclass);
 
 
 --
@@ -93,14 +68,6 @@ ALTER TABLE ONLY public.users
 
 
 --
--- Name: users users_spotify_username_key; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.users
-    ADD CONSTRAINT users_spotify_username_key UNIQUE (spotify_username);
-
-
---
 -- Name: users update_users_updated_at; Type: TRIGGER; Schema: public; Owner: -
 --
 
@@ -117,5 +84,5 @@ CREATE TRIGGER update_users_updated_at BEFORE UPDATE ON public.users FOR EACH RO
 --
 
 INSERT INTO public.schema_migrations (version) VALUES
-    ('20211223223250'),
-    ('20211226124008');
+    ('20211229154429'),
+    ('20211229154521');
