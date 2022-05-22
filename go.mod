@@ -1,6 +1,6 @@
 module github.com/petermnhull/go-music-app
 
-go 1.17
+go 1.18
 
 require (
 	github.com/gojek/heimdall/v7 v7.0.2
