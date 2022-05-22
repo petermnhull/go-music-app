@@ -22,10 +22,12 @@ Note that this has only been tested on Ubuntu 20.04, and is only intended for to
 Postgres migrations are managed with [dbmate](https://github.com/amacneil/dbmate) and can be found in the `db` directory.
 
 ### Variables
-| Variable            | Detail                 | Default     |
-|---------------------|------------------------|-------------|
-| `APP_PORT`          | App server port        | `8080`      |
-| `APP_ADDRESS`       | App server address     | `127.0.0.1` |
-| `APP_WRITE_TIMEOUT` | App timeout for writes | `5s`        |
-| `APP_READ_TIMEOUT`  | App timeout for reads  | `5s`        |
-| `POSTGRES_URL`      | Postgres URL           | None        |            
+| Variable                | Detail                 | Default     |
+|-------------------------|------------------------|-------------|
+| `APP_PORT`              | App server port        | `8080`      |
+| `APP_ADDRESS`           | App server address     | `127.0.0.1` |
+| `APP_WRITE_TIMEOUT`     | App timeout for writes | `5s`        |
+| `APP_READ_TIMEOUT`      | App timeout for reads  | `5s`        |
+| `DATABASE_URL`          | Postgres URL           | None        |            
+| `SPOTIFY_CLIENT_ID`     | Spotify client ID      | None        |            
+| `SPOTIFY_CLIENT_SECRET` | Spotify client secret  | None        |
