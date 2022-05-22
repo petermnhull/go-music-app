@@ -6,15 +6,15 @@ import (
 	"github.com/gojek/heimdall/v7"
 	"github.com/gojek/heimdall/v7/httpclient"
 	"github.com/jackc/pgx/v4"
-	"github.com/petermnhull/go-music-app/internal/services"
+	"github.com/petermnhull/go-music-app/pkg"
 )
 
 // AppContext holds application level dependencies and config
 type AppContext struct {
 	*AppConfig
 	Context      context.Context
-	HTTPClient   services.HTTPClientInterface
-	DBConnection services.DBConnectionInterface
+	HTTPClient   pkg.HTTPClient
+	DBConnection pkg.DBConnection
 }
 
 // NewContext creates a new context from environment variables

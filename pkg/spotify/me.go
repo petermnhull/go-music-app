@@ -6,7 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"github.com/petermnhull/go-music-app/internal/services"
+	"github.com/petermnhull/go-music-app/pkg"
 	"gopkg.in/validator.v2"
 )
 
@@ -40,7 +40,7 @@ func createMeRequest(accessToken string) (*http.Request, error) {
 
 // GetMe returns information on user corresponding to access token
 func GetMe(
-	httpclient services.HTTPClientInterface,
+	httpclient pkg.HTTPClient,
 	accessToken string,
 ) (*SpotifyMe, error) {
 	r, err := createMeRequest(accessToken)

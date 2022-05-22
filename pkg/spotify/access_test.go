@@ -3,7 +3,7 @@ package spotify_test
 import (
 	"testing"
 
-	"github.com/petermnhull/go-music-app/internal/services/spotify"
+	"github.com/petermnhull/go-music-app/pkg/spotify"
 	"github.com/petermnhull/go-music-app/pkg/testhelpers"
 	"github.com/stretchr/testify/assert"
 )

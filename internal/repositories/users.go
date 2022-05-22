@@ -8,11 +8,11 @@ import (
 
 	"github.com/jackc/pgx/v4"
 	"github.com/petermnhull/go-music-app/internal/models"
-	"github.com/petermnhull/go-music-app/internal/services"
+	"github.com/petermnhull/go-music-app/pkg"
 )
 
 // GetUserByID returns individual user by ID
-func GetUserByID(ctx context.Context, DB services.DBConnectionInterface, inputID string) (*models.User, error) {
+func GetUserByID(ctx context.Context, DB pkg.DBConnection, inputID string) (*models.User, error) {
 	query := fmt.Sprintf("select * from users where id='%s'", inputID)
 	row := DB.QueryRow(ctx, query)
 	var (
@@ -52,7 +52,7 @@ func GetUserByID(ctx context.Context, DB services.DBConnectionInterface, inputID
 }
 
 // UpsertUser inserts a user
-func UpsertUser(ctx context.Context, DB services.DBConnectionInterface, user *models.User) error {
+func UpsertUser(ctx context.Context, DB pkg.DBConnection, user *models.User) error {
 	query := fmt.Sprintf(
 		`
 		insert into users (

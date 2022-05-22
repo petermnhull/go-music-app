@@ -1,4 +1,4 @@
-package services
+package pkg
 
 import (
 	"context"
@@ -7,8 +7,8 @@ import (
 	"github.com/jackc/pgx/v4"
 )
 
-// DBConnectionInterface provides generic interface for interacting with database
-type DBConnectionInterface interface {
+// DBConnection provides generic interface for interacting with database
+type DBConnection interface {
 	Begin(ctx context.Context) (pgx.Tx, error)
 	Close(ctx context.Context) error
 	Ping(ctx context.Context) error

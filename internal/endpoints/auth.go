@@ -7,7 +7,7 @@ import (
 	"github.com/petermnhull/go-music-app/internal/config"
 	"github.com/petermnhull/go-music-app/internal/models"
 	"github.com/petermnhull/go-music-app/internal/repositories"
-	"github.com/petermnhull/go-music-app/internal/services/spotify"
+	"github.com/petermnhull/go-music-app/pkg/spotify"
 )
 
 // AuthHandler continues authorization flow by accepting an access code

@@ -9,7 +9,7 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/petermnhull/go-music-app/internal/services"
+	"github.com/petermnhull/go-music-app/pkg"
 	"gopkg.in/validator.v2"
 )
 
@@ -41,7 +41,7 @@ func createAccessRequest(code string, redirectURI string, clientID string, clien
 
 // GetAccess completes OAuth2 flow given an access code
 func GetAccess(
-	httpclient services.HTTPClientInterface,
+	httpclient pkg.HTTPClient,
 	code string,
 	redirectURI string,
 	clientID string,
