@@ -27,7 +27,7 @@ func TestNewAPIResponseFailed(t *testing.T) {
 
 func TestAPIResponseToOutput(t *testing.T) {
 	t.Run("api response renders output", func(t *testing.T) {
-		data := map[string]interface{}{}
+		data := map[string]any{}
 		r := endpoints.APIResponse{200, "success", data}
 		actual := r.ToOutput()
 		expected := `{"code": 200, "status": "success", "data": {}}`

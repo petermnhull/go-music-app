@@ -8,7 +8,7 @@ const (
 )
 
 // APIResponseData holds generic data for API response
-type APIResponseData interface{}
+type APIResponseData any
 
 // APIResponse holds general information to return
 type APIResponse struct {
@@ -25,7 +25,7 @@ func (r *APIResponse) ToOutput() string {
 }
 
 // NewAPIResponseSuccess creates a new APIResponse for a successful request
-func NewAPIResponseSuccess(code int64, data interface{}) *APIResponse {
+func NewAPIResponseSuccess(code int64, data any) *APIResponse {
 	response := APIResponse{code, statusSuccess, data}
 	return &response
 }
