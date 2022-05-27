@@ -2,7 +2,7 @@
 Simple Go API for music preferences.
 
 ## Usage
-Note that this has only been tested on Ubuntu 20.04, and is only intended for to be used by me as a fun project. 
+Note that this has only been tested on Ubuntu 20.04, and is only intended for to be used by me as a fun project to learn some tools. 
 
 ### Set Up
 - Create a `.env` file in the root directory and store the variables listed below.
